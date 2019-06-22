@@ -28,10 +28,11 @@ object HikariApp extends IOApp {
 
 			// Construct and run your server here!
 			for {
+				i <- db.init.transact(xa)
+				_ <- IO(println(s"Tables init affected $i rows?"))
 				n <- sql"select 42".query[Int].unique.transact(xa)
 				_ <- IO(println(n))
 			} yield ExitCode.Success
-
 		}
 
 }
