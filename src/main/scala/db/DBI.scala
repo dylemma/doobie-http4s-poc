@@ -1,9 +1,12 @@
 package db
 
+import cats.Functor
 import cats.effect._
+import cats.syntax.functor._
 import doobie._
 import doobie.hikari.HikariTransactor
 import doobie.util.transactor.{ Strategy, Transactor }
+import doobie.implicits._
 
 // database instance
 trait DBI[F[_]] {
@@ -33,5 +36,11 @@ object DBI {
 			val readOnly = Transactor.strategy.set(tx, Strategy(FC.setReadOnly(true), FC.unit, FC.unit, FC.unit))
 			apply(tx, readOnly)
 		}
+	}
+
+	def ensureInstalled[F[_]: Sync : Functor](dbi: DBI[F]): F[DBI[F]] = {
+		for {
+			_ <- db.init.transact(dbi.tx)
+		} yield dbi
 	}
 }
