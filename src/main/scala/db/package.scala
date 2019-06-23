@@ -49,7 +49,7 @@ package object db {
 			} yield ()
 		} else if(fromVersion == latestVersion) {
 			println("Db already installed!")
-			Free.pure(())
+			FC.unit
 		} else {
 			println(s"Update db from version $fromVersion to $latestVersion (not supported right now)")
 			???
